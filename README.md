@@ -3,8 +3,8 @@
 This folder contains the uncompressed distribution for the latest version of the Verifact WordPress plugin.
 
 ## Latest Release
-- Version: 2.0.5
-- Package path: github/verifact-plugin-2.0.4/VeriFact-WordPress-Fact-Checking-Plugin
+- Version: 2.0.7
+- Package path: github/verifact-plugin-2.0.7/verifact-plugin
 - No compression per project rules
 
 ## Install
@@ -18,7 +18,8 @@ This folder contains the uncompressed distribution for the latest version of the
 - Database logging wp_verifact_logs
 - Rate limiting (role overrides) and caching (object cache friendly)
 - WP-Cron scheduled checks infrastructure
-- Optional sources: Archive.org and Grokopedia
+- Optional sources: Archive.org and Wikipedia (selectable)
+- Planned: Grokopedia via backend (toggle available; API pending)
 - Remote cache upload via S3 presigned URL (Settings)
 - Log and User detail modals in admin
 
@@ -30,6 +31,9 @@ This folder contains the uncompressed distribution for the latest version of the
   - Install a Redis object cache plugin for WordPress
   - Configure connection in wp-config.php (e.g., define('WP_REDIS_HOST','127.0.0.1'))
   - The plugin automatically prefers wp_cache_get/wp_cache_set when available
+## Diagnostics
+- Integrations page includes Test Sources Connectivity (Wikipedia, Archive.org)
+- If backend Grok support is deployed, use Test Grok via Backend to verify provider connectivity
 
 ## Screenshots
 - Dashboard: screenshots/screenshot-dashboard.svg

@@ -2,6 +2,7 @@
 - Role-based rate limit overrides with JSON mapping
 - Object cache wrappers for result caching (Redis-compatible)
 - Synced full admin assets into distribution
+- Added Data Sources section in README and Integrations diagnostics
 
 ## 2.0.4 — 2026-01-23
 - Log/User modals; remote cache upload; GitHub package

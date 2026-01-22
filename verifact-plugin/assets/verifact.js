@@ -16,6 +16,13 @@
   function render() {
     const root = document.getElementById(rootId);
     if (!root) return;
+    if (VeriFactCfg.bannerUrl) {
+      const img = document.createElement('img');
+      img.src = VeriFactCfg.bannerUrl;
+      img.alt = 'VeriFact Banner';
+      img.className = 'verifact-banner-front';
+      root.appendChild(img);
+    }
     const claimInput = h('textarea', { class: 'vf-input', placeholder: 'Enter a claim or leave blank and use Prompt+Answer...' });
     const promptInput = h('input', { class: 'vf-input', placeholder: 'Prompt (optional)' });
     const answerInput = h('textarea', { class: 'vf-input', placeholder: 'Answer (optional)' });

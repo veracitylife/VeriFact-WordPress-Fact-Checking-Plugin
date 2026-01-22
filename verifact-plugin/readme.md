@@ -13,7 +13,8 @@ UI + REST proxy for the VeriFact FastAPI service.
 - Database logging table wp_verifact_logs
 - Rate limiting (with role overrides) and transient/object caching
 - WP-Cron scheduled checks
-- Optional sources: Archive.org, Grokopedia
+- Optional sources: Archive.org, Wikipedia
+- Planned: Grokopedia via backend (toggle; API pending)
 - Remote cache upload via S3 presigned URL
 
 ## Branding
@@ -24,3 +25,6 @@ UI + REST proxy for the VeriFact FastAPI service.
 - Toll Free: +1 (888) 264-6790
 - WhatsApp: +1 (808) 365-6628
 - Email: support@spunwebtechnology.com
+## Diagnostics
+- Integrations page includes Test Sources Connectivity (Wikipedia, Archive.org)
+- If backend Grok support is deployed, use Test Grok via Backend
