@@ -1,0 +1,12 @@
+.verifact-dashboard { background: #f8f9fa; min-height: 100vh; padding: 2rem; color: #000; }
+.verifact-stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; margin: 3rem 0; }
+.verifact-stat-card { background: #fff; border: 1px solid #e9ecef; border-radius: 16px; padding: 1.5rem; display: flex; align-items: center; box-shadow: 0 4px 6px rgba(0,0,0,.1); }
+.stat-icon { font-size: 3rem; margin-right: 1rem; }
+.stat-content h3 { margin: 0; font-size: 2.5rem; font-weight: 700; color: #000; }
+.stat-content p { margin: .5rem 0 0; color: #000; font-size: .9rem; font-weight: 500; text-transform: uppercase; letter-spacing: .5px; }
+.verifact-quick-actions { background: #fff; border: 1px solid #e9ecef; border-radius: 16px; padding: 1.5rem; margin: 3rem 0; box-shadow: 0 4px 6px rgba(0,0,0,.1); }
+.action-buttons { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-top: 1.5rem; }
+.verifact-recent-activity,.verifact-system-status { background: #fff; border: 1px solid #e9ecef; border-radius: 16px; padding: 1.5rem; margin: 3rem 0; box-shadow: 0 4px 6px rgba(0,0,0,.1); }
+.stance-supported { background: #4caf50; color: #fff; }
+.stance-refuted { background: #f44336; color: #fff; }
+.stance-not-enough-evidence { background: #ff9800; color: #fff; }

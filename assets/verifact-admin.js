@@ -1,0 +1,1 @@
+jQuery(document).ready(function($){ setInterval(function(){ jQuery.post(ajaxurl,{action:'verifact_get_stats',nonce:verifactAdmin.nonce},function(r){ if(r.success){ jQuery('.verifact-stat-card:first .stat-content h3').text(r.data.total_checks.toLocaleString()); } }); },30000); });

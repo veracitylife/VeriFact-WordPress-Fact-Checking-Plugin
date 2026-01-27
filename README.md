@@ -1,50 +1,18 @@
-# Verifact — WordPress Plugin (GitHub Package)
+# Verifact — WordPress Plugin (2.0.8)
+UI + REST proxy for the VeriFact FastAPI service.
 
-This folder contains the uncompressed distribution for the latest version of the Verifact WordPress plugin.
+## Usage
+1. Copy this folder into WordPress plugins directory or upload via Admin.
+2. Go to Settings → VeriFact and set API Base URL (e.g., https://your-domain.com/verifact).
+3. Add the shortcode `[verifact]` to any page/post.
 
-## Latest Release
-- Version: 2.0.7
-- Package path: github/verifact-plugin-2.0.7/verifact-plugin
-- No compression per project rules
-
-## Install
-- Upload the Verifact-WordPress-Fact-Checking-Plugin/verifact-plugin folder to wp-content/plugins/
-- Activate in WordPress Admin → Plugins
-- Configure Settings → VeriFact (API base, rate limit, cache, sources)
-
-## Features
-- Admin dashboard, analytics, logs, bulk tools
-- REST route verifact/v1/check proxy to FastAPI
-- Database logging wp_verifact_logs
-- Rate limiting (role overrides) and caching (object cache friendly)
-- WP-Cron scheduled checks infrastructure
-- Optional sources: Archive.org and Wikipedia (selectable)
-- Planned: Grokopedia via backend (toggle available; API pending)
-- Remote cache upload via S3 presigned URL (Settings)
-- Log and User detail modals in admin
-
-## Setup
-- Role-based rate limits:
-  - Settings → API Management → Role Rate Limits (JSON)
-  - Example: {"administrator":1000,"editor":300,"author":200,"subscriber":50}
-- Object cache:
-  - Install a Redis object cache plugin for WordPress
-  - Configure connection in wp-config.php (e.g., define('WP_REDIS_HOST','127.0.0.1'))
-  - The plugin automatically prefers wp_cache_get/wp_cache_set when available
-## Diagnostics
-- Integrations page includes Test Sources Connectivity (Wikipedia, Archive.org)
-- If backend Grok support is deployed, use Test Grok via Backend to verify provider connectivity
-
-## Screenshots
-- Dashboard: screenshots/screenshot-dashboard.svg
-- Analytics: screenshots/screenshot-analytics.svg
-- History & Logs: screenshots/screenshot-history.svg
-- Bulk Tools: screenshots/screenshot-bulk-tools.svg
-- API Management: screenshots/screenshot-api-management.svg
+## Notes
+- REST route: `/wp-json/verifact/v1/check` proxies to `{API_BASE}/check`.
+- Optional sources: enable Archive.org and Grokopedia in Settings; forwarded to backend via `sources`.
 
 ## Branding
 - Verifact by Veracity Integrity — www.veracityintegrity.com
-- Child company of Spun Web Technology
+- Veracity Integrity is a child company of Spun Web Technology
 - Website: https://spunwebtechnology.com
 - Service / Contact: https://spunwebtechnology.com/service-form
 - Toll Free: +1 (888) 264-6790
