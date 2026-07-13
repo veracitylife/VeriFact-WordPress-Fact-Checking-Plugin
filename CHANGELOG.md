@@ -1,5 +1,17 @@
 # Changelog
 
+## 3.3.0
+
+- Added the shared claim registry and semantic duplicate search.
+- Added collaborative human-review cases, assignments, comments, and decisions.
+- Added sandboxed evidence-provider manifests and policy-pack administration.
+- Added signed verification receipts and transparency-log access.
+- Added evidence conflict/source-diversity maps and private deployment profiles.
+- Added organization entitlements and integration conformance certification.
+- Added the Platform admin screen and secret-safe WordPress proxy routes.
+- Added a reproducible npm lockfile for GitHub Actions.
+# Changelog
+
 ## 3.2.0 - 2026-07-14
 
 - Added authenticated API handshake and client contract negotiation.

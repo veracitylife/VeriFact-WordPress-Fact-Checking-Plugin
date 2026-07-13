@@ -1,13 +1,13 @@
 <?php
 $root=dirname(__DIR__);$plugin=file_get_contents($root.'/verifact-plugin.php');$failures=[];
 $expect=static function(bool $condition,string $message)use(&$failures):void{if(!$condition){$failures[]=$message;}};
-$expect(str_contains($plugin,'Version: 3.2.0'),'Version header must be 3.2.0');
+$expect(str_contains($plugin,'Version: 3.3.0'),'Version header must be 3.3.0');
 $expect(str_contains($plugin,"register_activation_hook(__FILE__"),'Activation hook is required');
 $expect(str_contains($plugin,'permission_callback'),'REST permission callbacks are required');
 $expect(str_contains($plugin,"getenv('VERIFACT_API_KEY')"),'Server-injected API key mapping is required');
 $expect(!str_contains($plugin,"get_option('verifact_api_key'"),'API keys must not be stored in WordPress options');
 $expect(str_contains($plugin,'wp_safe_remote_post'),'Safe upstream requests are required');
-foreach(['editor','privacy','diagnostics','queue','compatibility','workflow','evidence','enterprise','support','bulk'] as $module){$expect(is_file($root.'/includes/class-verifact-'.$module.'.php'),ucfirst($module).' module is required');}
+foreach(['editor','privacy','diagnostics','queue','compatibility','workflow','evidence','enterprise','support','bulk','platform'] as $module){$expect(is_file($root.'/includes/class-verifact-'.$module.'.php'),ucfirst($module).' module is required');}
 $queue=file_get_contents($root.'/includes/class-verifact-queue.php');
 $expect(str_contains($queue,'verifact_jobs'),'Durable database queue is required');
 $expect(str_contains($queue,'as_schedule_recurring_action'),'Action Scheduler integration is required');
@@ -41,4 +41,4 @@ $expect(str_contains($queue,'function requeue'),'Dead-letter recovery is require
 $bulk=file_get_contents($root.'/includes/class-verifact-bulk.php');
 $expect(str_contains($bulk,"'/bulk/queue'"),'Bulk queue REST endpoint is required');
 $expect(str_contains($bulk,"WP_CLI::add_command('verifact bulk queue'"),'Bulk queue CLI is required');preg_match_all("/\[\$this,'([A-Za-z0-9_]+)'\]/",$plugin,$references);preg_match_all('/function\s+([A-Za-z0-9_]+)\s*\(/',$plugin,$definitions);$missing=array_diff(array_unique($references[1]),array_unique($definitions[1]));$expect($missing===[],'Undefined callbacks: '.implode(', ',$missing));
-if($failures){fwrite(STDERR,implode(PHP_EOL,$failures).PHP_EOL);exit(1);}echo "VeriFact 3.2 structural checks passed.\n";
+if($failures){fwrite(STDERR,implode(PHP_EOL,$failures).PHP_EOL);exit(1);}echo "VeriFact 3.3 structural checks passed.\n";

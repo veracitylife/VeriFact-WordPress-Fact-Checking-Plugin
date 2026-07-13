@@ -15,7 +15,8 @@
                                  "@lint",
                                  "@php tests/structural.php",
                                  "@php tests/contract.php",
-                                 "@php tests/provenance.php"
+                                 "@php tests/provenance.php",
+                                 "@php tests/platform.php"
                              ]
                 }
 }

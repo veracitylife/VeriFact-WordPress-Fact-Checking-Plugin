@@ -2,7 +2,7 @@
 /**
  * Plugin Name: VeriFact Checker
  * Description: Evidence-backed fact checking for WordPress through a private VeriFact API.
- * Version: 3.2.0
+ * Version: 3.3.0
  * Author: Veracity Integrity
  * License: MIT
  * Requires at least: 6.2
@@ -20,10 +20,11 @@ require_once __DIR__.'/includes/class-verifact-evidence.php';
 require_once __DIR__.'/includes/class-verifact-enterprise.php';
 require_once __DIR__.'/includes/class-verifact-support.php';
 require_once __DIR__.'/includes/class-verifact-bulk.php';
+require_once __DIR__.'/includes/class-verifact-platform.php';
 
 final class VeriFact_Plugin {
-    public const VERSION='3.2.0';
-    private const DB_VERSION='3.2.0';
+    public const VERSION='3.3.0';
+    private const DB_VERSION='3.3.0';
     private const API_BASE='verifact_api_base';
     private const PUBLIC_ACCESS='verifact_public_enabled';
     private const REQUIRE_LOGIN='verifact_require_login';
@@ -209,7 +210,7 @@ final class VeriFact_Plugin {
         $errors=[];foreach([$capabilities,$identity,$test] as $item){if(is_wp_error($item)){$errors[]=$item->get_error_message();}}
         $features=is_array($capabilities)?(array)($capabilities['features']??[]):[];$scopes=is_array($identity)?(array)($identity['scopes']??[]):[];
         $compatible=is_array($capabilities)&&($capabilities['api_version']??'')==='v1'&&version_compare(self::VERSION,(string)($capabilities['minimum_client_version']??'0.0.0'),'>=');
-        $required_features=['authenticated_handshake','bulk_jobs','provenance_manifest'];$feature_ready=!array_diff($required_features,$features);
+        $required_features=['authenticated_handshake','bulk_jobs','provenance_manifest','claim_registry','review_cases','signed_receipts','policy_packs','integration_conformance'];$feature_ready=!array_diff($required_features,$features);
         $authenticated=is_array($identity)&&!empty($identity['authenticated'])&&(in_array('verify',$scopes,true)||in_array('admin',$scopes,true));
         $report=['connected'=>!$errors&&$compatible&&$feature_ready&&$authenticated&&!empty($test['connected']),'configured'=>true,'authenticated'=>$authenticated,'compatible'=>$compatible,'server_version'=>(string)($capabilities['server_version']??''),'api_version'=>(string)($capabilities['api_version']??''),'contract_version'=>(string)($capabilities['contract_version']??''),'auth_type'=>(string)($identity['auth_type']??''),'key_id'=>(string)($identity['key_id']??''),'tenant_id'=>(string)($identity['tenant_id']??''),'scopes'=>array_values(array_map('sanitize_key',$scopes)),'features'=>array_values(array_map('sanitize_key',$features)),'region'=>(string)($test['region']??''),'message'=>$errors?implode(' ',array_unique($errors)):__('Authenticated VeriFact API connection verified.','verifact'),'checked_at'=>current_time('mysql',true)];
         set_transient('verifact_connection_report',$report,5*MINUTE_IN_SECONDS);return $report;
@@ -357,3 +358,4 @@ new VeriFact_Evidence();
 $GLOBALS['verifact_enterprise']=new VeriFact_Enterprise();
 new VeriFact_Support($GLOBALS['verifact_plugin'],$GLOBALS['verifact_queue'],$GLOBALS['verifact_enterprise']);
 new VeriFact_Bulk($GLOBALS['verifact_queue']);
+new VeriFact_Platform($GLOBALS['verifact_plugin']);

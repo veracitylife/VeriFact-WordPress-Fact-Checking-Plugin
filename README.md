@@ -1,4 +1,4 @@
-# VeriFact WordPress 3.2.0
+# VeriFact WordPress 3.3.0
 
 A production-oriented editorial verification client for the VeriFact API.
 

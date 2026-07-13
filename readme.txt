@@ -4,7 +4,7 @@ Tags: fact checking, editorial, evidence, verification
 Requires at least: 6.2
 Tested up to: 6.8
 Requires PHP: 8.1
-Stable tag: 3.2.0
+Stable tag: 3.3.0
 License: MIT
 License URI: https://opensource.org/license/mit
 
