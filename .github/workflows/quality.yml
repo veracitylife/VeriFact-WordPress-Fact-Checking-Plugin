@@ -21,8 +21,9 @@ jobs:
         with: {node-version: "22", cache: npm}
       - run: npm ci
       - run: npm run check
+      - run: pwsh tools/build-plugin.ps1
       - uses: wordpress/plugin-check-action@v1
-        with: {build-dir: .}
+        with: {build-dir: dist/verifact}
   wordpress-matrix:
     strategy:
       fail-fast: false
