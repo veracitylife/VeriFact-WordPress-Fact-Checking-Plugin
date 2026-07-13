@@ -238,7 +238,7 @@ final class VeriFact_Plugin {
     private function verify_provenance(array $response): bool {
         $expected=(string)($response['meta']['provenance_sha256']??'');if(!preg_match('/^[a-f0-9]{64}$/',$expected)){return false;}$manifest=[];
         foreach((array)($response['results']??[]) as $result){$evidence=[];foreach((array)($result['evidence']??[]) as $item){$evidence[]=['url'=>(string)($item['url']??''),'content_hash'=>(string)($item['content_hash']??''),'retrieved_at'=>(string)($item['retrieved_at']??'')];}$manifest[]=['claim'=>(string)($result['claim']??''),'stance'=>(string)($result['stance']??''),'confidence'=>(float)($result['confidence']??0),'evidence'=>$evidence];}
-        $sort=static function(&$value)use(&$sort):void{if(!is_array($value)){return;}if(array_is_list($value)){foreach($value as &$item){$sort($item);}unset($item);return;}ksort($value);foreach($value as &$item){$sort($item);}unset($item);};$sort($manifest);
+        $sort=static function(&$value)use(&$sort):void{if(!is_array($value)){return;}if($value===[]||array_keys($value)===range(0,count($value)-1)){foreach($value as &$item){$sort($item);}unset($item);return;}ksort($value);foreach($value as &$item){$sort($item);}unset($item);};$sort($manifest);
         $actual=hash('sha256',wp_json_encode($manifest,JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE));return hash_equals($expected,$actual);
     }
 

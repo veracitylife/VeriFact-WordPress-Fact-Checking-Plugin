@@ -18,7 +18,11 @@ final class VeriFact_Bulk {
         if($action!=='verifact_queue'){return $redirect;}$result=$this->queue_ids($post_ids,get_current_user_id());return add_query_arg(['verifact_bulk_queued'=>count($result['queued']),'verifact_bulk_failed'=>count($result['errors'])],$redirect);
     }
     public function admin_notice(): void {
-        if(!isset($_GET['verifact_bulk_queued'])){return;}$queued=absint($_GET['verifact_bulk_queued']);$failed=absint($_GET['verifact_bulk_failed']??0);echo '<div class="notice notice-success is-dismissible"><p>'.esc_html(sprintf(__('VeriFact queued %1$d post(s); %2$d could not be queued.','verifact'),$queued,$failed)).'</p></div>';
+        if(!isset($_GET['verifact_bulk_queued'])){return;}
+        $queued=absint($_GET['verifact_bulk_queued']);$failed=absint($_GET['verifact_bulk_failed']??0);
+        /* translators: 1: number of queued posts, 2: number of posts that could not be queued. */
+        $message=sprintf(__('VeriFact queued %1$d post(s); %2$d could not be queued.','verifact'),$queued,$failed);
+        echo '<div class="notice notice-success is-dismissible"><p>'.esc_html($message).'</p></div>';
     }
     public function routes(): void {
         register_rest_route('verifact/v1','/bulk/queue',['methods'=>WP_REST_Server::CREATABLE,'callback'=>[$this,'rest_queue'],'permission_callback'=>fn()=>current_user_can('verifact_check_content'),'args'=>['post_ids'=>['type'=>'array','required'=>true,'items'=>['type'=>'integer'],'validate_callback'=>fn($value)=>is_array($value)&&count($value)>=1&&count($value)<=100]]]);
