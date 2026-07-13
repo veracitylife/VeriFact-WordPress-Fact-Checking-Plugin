@@ -1,0 +1,21 @@
+{
+    "name":  "veracity-integrity/verifact-wordpress",
+    "description":  "WordPress client for the VeriFact evidence verification API",
+    "type":  "wordpress-plugin",
+    "license":  "MIT",
+    "require":  {
+                    "php":  "\u003e=8.1"
+                },
+    "scripts":  {
+                    "lint":  [
+                                 "@php -l verifact-plugin.php",
+                                 "@php -l uninstall.php"
+                             ],
+                    "test":  [
+                                 "@lint",
+                                 "@php tests/structural.php",
+                                 "@php tests/contract.php",
+                                 "@php tests/provenance.php"
+                             ]
+                }
+}

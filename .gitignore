@@ -1,0 +1,9 @@
+backup-files/
+dist/
+vendor/
+node_modules/
+.env
+.env.*
+!.env.example
+*.zip
+*.log

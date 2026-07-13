@@ -1,0 +1,19 @@
+{
+    "name":  "verifact-wordpress",
+    "private":  true,
+    "version":  "3.2.0",
+    "scripts":  {
+                    "check":  "node --check assets/verifact.js \u0026\u0026 node --check assets/verifact-admin.js \u0026\u0026 node --check assets/verifact-editor.js",
+                    "wp:start":  "wp-env start",
+                    "wp:stop":  "wp-env stop",
+                    "test:integration":  "wp-env run cli wp plugin activate --all \u0026\u0026 wp-env run cli wp eval \u0027if (!class_exists(\"VeriFact_Plugin\") || VeriFact_Plugin::VERSION !== \"3.2.0\") { exit(1); } global $wpdb; $table=$wpdb-\u003eprefix.\"verifact_jobs\"; if ($wpdb-\u003eget_var($wpdb-\u003eprepare(\"SHOW TABLES LIKE %s\",$table)) !== $table) { exit(2); } echo \"VeriFact 3.2 integration passed\";\u0027",
+                    "test:large-post":  "wp-env run cli wp eval \u0027$body=str_repeat(\"NASA reported a measurement in 2025. \" ,2500); $id=wp_insert_post([\"post_title\"=\u003e\"Large VeriFact test\",\"post_content\"=\u003e$body,\"post_status\"=\u003e\"draft\"]); $job=$GLOBALS[\"verifact_queue\"]-\u003eenqueue($id,1); if (is_wp_error($job)) { exit(1); } echo $job;\u0027",
+                    "test:multisite":  "wp-env run cli wp core multisite-convert --title=\u0027VeriFact Test Network\u0027 \u0026\u0026 wp-env run cli wp site create --slug=second --title=\u0027Second Site\u0027 --email=admin@example.test \u0026\u0026 wp-env run cli wp plugin activate --all --network \u0026\u0026 wp-env run cli wp eval \u0027foreach(get_sites([\"fields\"=\u003e\"ids\"]) as $site_id){switch_to_blog($site_id);global $wpdb;$table=$wpdb-\u003eprefix.\"verifact_jobs\";if($wpdb-\u003eget_var($wpdb-\u003eprepare(\"SHOW TABLES LIKE %s\",$table))!==$table){exit(3);}restore_current_blog();}echo \"VeriFact multisite passed\";\u0027",
+                    "test:compatibility":  "wp-env run cli wp eval \u0027register_post_type(\"vf_test\",[\"show_ui\"=\u003etrue,\"supports\"=\u003e[\"editor\"]]);$id=wp_insert_post([\"post_type\"=\u003e\"vf_test\",\"post_status\"=\u003e\"draft\",\"post_title\"=\u003e\"Builder test\"]);update_post_meta($id,\"_elementor_data\",wp_json_encode([[\"settings\"=\u003e[\"editor\"=\u003e\"Elementor verified claim text\"]]]));$content=apply_filters(\"verifact_post_content\",\"\",get_post($id));if(strpos($content,\"Elementor verified claim text\")===false){exit(4);}echo \"VeriFact compatibility passed\";\u0027",
+                    "test:queue-recovery":  "wp-env run cli wp eval \u0027global $wpdb;$table=$wpdb-\u003eprefix.\"verifact_jobs\";$now=current_time(\"mysql\",true);$wpdb-\u003einsert($table,[\"post_id\"=\u003e1,\"status\"=\u003e\"dead_letter\",\"content_hash\"=\u003ehash(\"sha256\",\"test\"),\"attempts\"=\u003e4,\"available_at\"=\u003e$now,\"created_at\"=\u003e$now,\"updated_at\"=\u003e$now]);$id=(int)$wpdb-\u003einsert_id;if(!$GLOBALS[\"verifact_queue\"]-\u003erequeue($id)){exit(5);}echo \"VeriFact queue recovery passed\";\u0027",
+                    "test:bulk-registration":  "wp-env run cli wp eval \u0027do_action(\"admin_init\");if(!has_filter(\"bulk_actions-edit-post\")){exit(6);}echo \"VeriFact bulk registration passed\";\u0027"
+                },
+    "devDependencies":  {
+                            "@wordpress/env":  "^10.32.0"
+                        }
+}
