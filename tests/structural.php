@@ -1,13 +1,13 @@
 <?php
 $root=dirname(__DIR__);$plugin=file_get_contents($root.'/verifact-plugin.php');$failures=[];
 $expect=static function(bool $condition,string $message)use(&$failures):void{if(!$condition){$failures[]=$message;}};
-$expect(str_contains($plugin,'Version: 3.3.0'),'Version header must be 3.3.0');
+$expect(str_contains($plugin,'Version: 3.4.0'),'Version header must be 3.4.0');
 $expect(str_contains($plugin,"register_activation_hook(__FILE__"),'Activation hook is required');
 $expect(str_contains($plugin,'permission_callback'),'REST permission callbacks are required');
 $expect(str_contains($plugin,"getenv('VERIFACT_API_KEY')"),'Server-injected API key mapping is required');
 $expect(!str_contains($plugin,"get_option('verifact_api_key'"),'API keys must not be stored in WordPress options');
 $expect(str_contains($plugin,'wp_safe_remote_post'),'Safe upstream requests are required');
-foreach(['editor','privacy','diagnostics','queue','compatibility','workflow','evidence','enterprise','support','bulk','platform'] as $module){$expect(is_file($root.'/includes/class-verifact-'.$module.'.php'),ucfirst($module).' module is required');}
+foreach(['editor','privacy','diagnostics','queue','compatibility','workflow','evidence','enterprise','support','bulk','platform','subscription'] as $module){$expect(is_file($root.'/includes/class-verifact-'.$module.'.php'),ucfirst($module).' module is required');}
 $queue=file_get_contents($root.'/includes/class-verifact-queue.php');
 $expect(str_contains($queue,'verifact_jobs'),'Durable database queue is required');
 $expect(str_contains($queue,'as_schedule_recurring_action'),'Action Scheduler integration is required');
@@ -38,7 +38,13 @@ $expect(str_contains($plugin,'verifact_api_circuit'),'Transient failure circuit 
 $expect(str_contains($plugin,'verify_provenance'),'Response provenance verification is required');
 $expect(str_contains($queue,"'dead_letter'"),'Dead-letter queue state is required');
 $expect(str_contains($queue,'function requeue'),'Dead-letter recovery is required');
+$subscription=file_get_contents($root.'/includes/class-verifact-subscription.php');
+$expect(str_contains($subscription,"'/api/v1/billing/checkout-session'"),'Hosted subscription checkout is required');
+$expect(str_contains($subscription,"'/api/v1/licenses/activate'"),'One-time license activation is required');
+$expect(str_contains($subscription,'sodium_crypto_sign_detached'),'Site-bound Ed25519 authentication is required');
+$expect(!str_contains($subscription,'update_option(self::LICENSE_STATUS,$license'),'Raw license keys must not be stored');
+$expect(str_contains($plugin,"apply_filters('verifact_api_bearer_token'"),'Short-lived bearer token transport is required');
 $bulk=file_get_contents($root.'/includes/class-verifact-bulk.php');
 $expect(str_contains($bulk,"'/bulk/queue'"),'Bulk queue REST endpoint is required');
 $expect(str_contains($bulk,"WP_CLI::add_command('verifact bulk queue'"),'Bulk queue CLI is required');preg_match_all("/\[\$this,'([A-Za-z0-9_]+)'\]/",$plugin,$references);preg_match_all('/function\s+([A-Za-z0-9_]+)\s*\(/',$plugin,$definitions);$missing=array_diff(array_unique($references[1]),array_unique($definitions[1]));$expect($missing===[],'Undefined callbacks: '.implode(', ',$missing));
-if($failures){fwrite(STDERR,implode(PHP_EOL,$failures).PHP_EOL);exit(1);}echo "VeriFact 3.3 structural checks passed.\n";
+if($failures){fwrite(STDERR,implode(PHP_EOL,$failures).PHP_EOL);exit(1);}echo "VeriFact 3.4 structural checks passed.\n";

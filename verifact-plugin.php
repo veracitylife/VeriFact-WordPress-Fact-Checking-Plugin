@@ -2,7 +2,7 @@
 /**
  * Plugin Name: VeriFact Checker
  * Description: Evidence-backed fact checking for WordPress through a private VeriFact API.
- * Version: 3.3.0
+ * Version: 3.4.0
  * Author: Veracity Integrity
  * License: MIT
  * Requires at least: 6.2
@@ -21,10 +21,11 @@ require_once __DIR__.'/includes/class-verifact-enterprise.php';
 require_once __DIR__.'/includes/class-verifact-support.php';
 require_once __DIR__.'/includes/class-verifact-bulk.php';
 require_once __DIR__.'/includes/class-verifact-platform.php';
+require_once __DIR__.'/includes/class-verifact-subscription.php';
 
 final class VeriFact_Plugin {
-    public const VERSION='3.3.0';
-    private const DB_VERSION='3.3.0';
+    public const VERSION='3.4.0';
+    private const DB_VERSION='3.4.0';
     private const API_BASE='verifact_api_base';
     private const PUBLIC_ACCESS='verifact_public_enabled';
     private const REQUIRE_LOGIN='verifact_require_login';
@@ -219,14 +220,19 @@ final class VeriFact_Plugin {
     public function dashboard_stats(): array { return $this->stats(); }
     public function api_request(string $path,array $payload) { return $this->api_call('POST',$path,$payload); }
     public function api_get(string $path) { return $this->api_call('GET',$path); }
+    public function api_delete(string $path) { return $this->api_call('DELETE',$path); }
+    public function api_public_request(string $path,array $payload) { return $this->api_call('POST',$path,$payload,false); }
+    public function api_public_get(string $path) { return $this->api_call('GET',$path,[],false); }
+    public function api_base_url(): string { return $this->api_base(); }
 
-    private function api_call(string $method,string $path,array $payload=[]) {
+    private function api_call(string $method,string $path,array $payload=[],bool $authenticate=true) {
         $base=$this->api_base();if(!$base){return new WP_Error('verifact_not_configured',__('VeriFact API URL is not configured.','verifact'),['status'=>503]);}
         $circuit=(int)get_transient('verifact_api_circuit');if($circuit>time()){return new WP_Error('verifact_circuit_open',__('VeriFact API is temporarily paused after repeated connection failures.','verifact'),['status'=>503,'retry_after'=>$circuit-time()]);}
-        $headers=['Content-Type'=>'application/json','Accept'=>'application/json','X-Request-ID'=>wp_generate_uuid4(),'VeriFact-Client-Version'=>self::VERSION];$key=$this->api_key();if($key!==''){$headers['X-API-Key']=$key;}
+        $headers=['Content-Type'=>'application/json','Accept'=>'application/json','X-Request-ID'=>wp_generate_uuid4(),'VeriFact-Client-Version'=>self::VERSION];
+        if($authenticate){$bearer=(string)apply_filters('verifact_api_bearer_token','');if($bearer!==''){$headers['Authorization']='Bearer '.$bearer;}else{$key=$this->api_key();if($key!==''){$headers['X-API-Key']=$key;}}}
         $url=$base.'/'.ltrim($path,'/');$started=microtime(true);$last_status=0;$last_error='';
         for($attempt=0;$attempt<3;$attempt++){
-            $args=['timeout'=>45,'redirection'=>0,'headers'=>$headers];if($method==='POST'){$args['body']=wp_json_encode($payload);$response=wp_safe_remote_post($url,$args);}else{$response=wp_safe_remote_get($url,$args);}
+            $args=['timeout'=>45,'redirection'=>0,'headers'=>$headers];if($method==='POST'){$args['body']=wp_json_encode($payload);$response=wp_safe_remote_post($url,$args);}elseif($method==='DELETE'){$args['method']='DELETE';$response=wp_safe_remote_request($url,$args);}else{$response=wp_safe_remote_get($url,$args);}
             if(is_wp_error($response)){$last_error=$response->get_error_message();$last_status=502;}else{$last_status=(int)wp_remote_retrieve_response_code($response);$data=json_decode(wp_remote_retrieve_body($response),true);if($last_status>=200&&$last_status<300&&is_array($data)){$data['_client_runtime_ms']=round((microtime(true)-$started)*1000,1);delete_transient('verifact_api_circuit');if($path==='/api/v1/check'&&!$this->verify_provenance($data)){return new WP_Error('verifact_provenance_mismatch',__('The API provenance manifest did not match the response.','verifact'),['status'=>502]);}return $data;}$last_error=is_array($data)?sanitize_text_field((string)($data['detail']??$data['error']['message']??'')):'';}
             if(!in_array($last_status,[429,502,503,504],true)){break;}if($attempt<2){usleep((int)(100000*(2**$attempt)));}
         }
@@ -359,3 +365,4 @@ $GLOBALS['verifact_enterprise']=new VeriFact_Enterprise();
 new VeriFact_Support($GLOBALS['verifact_plugin'],$GLOBALS['verifact_queue'],$GLOBALS['verifact_enterprise']);
 new VeriFact_Bulk($GLOBALS['verifact_queue']);
 new VeriFact_Platform($GLOBALS['verifact_plugin']);
+new VeriFact_Subscription($GLOBALS['verifact_plugin']);

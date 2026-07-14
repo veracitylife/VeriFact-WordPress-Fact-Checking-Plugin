@@ -1,4 +1,4 @@
-# VeriFact WordPress 3.3.0
+# VeriFact WordPress 3.4.0
 
 A production-oriented editorial verification client for the VeriFact API.
 
@@ -29,3 +29,14 @@ If real system cron is available, run `wp verifact queue run` every minute. Acti
 - `powershell -ExecutionPolicy Bypass -File tools/build-plugin.ps1`
 
 The built package is `dist/verifact.zip`.
+
+
+## Version 3.4 subscription experience
+
+- Stripe-hosted signup and customer billing portal, with no card data handled by WordPress.
+- Automatic website activation after successful checkout, plus one-time activation for existing licenses.
+- Ed25519 site identity derived from existing WordPress salts; the raw license and permanent API credentials are never saved in WordPress.
+- Fifteen-minute in-memory API bearer tokens, plan status, website seats, monthly usage, and datasource visibility.
+- Clear subscription, activation, connection, billing, and deactivation recovery messages.
+
+The official API base URL must be injected through `VERIFACT_API_BASE_URL` or configured under VeriFact > Settings before signup. Do not guess or hard-code a deployment URL until the production API route is confirmed.

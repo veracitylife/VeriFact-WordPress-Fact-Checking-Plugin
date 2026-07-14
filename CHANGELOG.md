@@ -1,5 +1,13 @@
 # Changelog
 
+## 3.4.0
+
+- Added customer-friendly Stripe-hosted subscription signup and billing management.
+- Added one-time license activation without saving the raw license in WordPress.
+- Added Ed25519 site identity and short-lived in-memory API tokens.
+- Added plan, website-seat, monthly-usage, and datasource entitlement views.
+- Added safe website deactivation and subscription recovery messages.
+
 ## 3.3.0
 
 - Added the shared claim registry and semantic duplicate search.
