@@ -2,7 +2,7 @@
 /**
  * Plugin Name: VeriFact Checker
  * Description: Evidence-backed fact checking for WordPress through a private VeriFact API.
- * Version: 3.4.0
+ * Version: 3.5.0
  * Author: Veracity Integrity
  * License: MIT
  * Requires at least: 6.2
@@ -22,10 +22,11 @@ require_once __DIR__.'/includes/class-verifact-support.php';
 require_once __DIR__.'/includes/class-verifact-bulk.php';
 require_once __DIR__.'/includes/class-verifact-platform.php';
 require_once __DIR__.'/includes/class-verifact-subscription.php';
+require_once __DIR__.'/includes/class-verifact-inline.php';
 
 final class VeriFact_Plugin {
-    public const VERSION='3.4.0';
-    private const DB_VERSION='3.4.0';
+    public const VERSION='3.5.0';
+    private const DB_VERSION='3.5.0';
     private const API_BASE='verifact_api_base';
     private const PUBLIC_ACCESS='verifact_public_enabled';
     private const REQUIRE_LOGIN='verifact_require_login';
@@ -366,3 +367,4 @@ new VeriFact_Support($GLOBALS['verifact_plugin'],$GLOBALS['verifact_queue'],$GLO
 new VeriFact_Bulk($GLOBALS['verifact_queue']);
 new VeriFact_Platform($GLOBALS['verifact_plugin']);
 new VeriFact_Subscription($GLOBALS['verifact_plugin']);
+new VeriFact_Inline();

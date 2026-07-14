@@ -1,6 +1,8 @@
-# VeriFact WordPress 3.4.0
+# VeriFact WordPress 3.5.0
 
 A production-oriented editorial verification client for the VeriFact API.
+
+Installation, onboarding, queue, upgrade, and rollback procedure: [`Installation.md`](Installation.md).
 
 ## Version 3.0 capabilities
 
@@ -40,3 +42,6 @@ The built package is `dist/verifact.zip`.
 - Clear subscription, activation, connection, billing, and deactivation recovery messages.
 
 The official API base URL must be injected through `VERIFACT_API_BASE_URL` or configured under VeriFact > Settings before signup. Do not guess or hard-code a deployment URL until the production API route is confirmed.
+
+
+Version 3.5 renders verified claims as normal prose with compact inline source links and accessible factuality tooltips.

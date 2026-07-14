@@ -1,5 +1,12 @@
 # Changelog
 
+## 3.5.0
+
+- Added normal-prose inline source citations with hover and keyboard-focus factuality notes.
+- Added automatic rendering from API annotations and portable `{{verifact|URL|NOTE}}` markers.
+- Added direct-source new-tab links with safe rel attributes and accessible labels.
+- Removed the requirement for Fact/Commentary paragraph formatting or a mandatory end-of-post report.
+
 ## 3.4.0
 
 - Added customer-friendly Stripe-hosted subscription signup and billing management.
