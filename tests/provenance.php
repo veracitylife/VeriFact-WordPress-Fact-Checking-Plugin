@@ -1,0 +1,5 @@
+<?php
+$manifest=[['claim'=>'Earth orbits the Sun.','stance'=>'supported','confidence'=>0.9,'evidence'=>[['url'=>'https://example.org/source/1','content_hash'=>str_repeat('a',64),'retrieved_at'=>'2026-07-14T00:00:00+00:00']]]];
+$sort=static function(&$value)use(&$sort):void{if(!is_array($value)){return;}if(array_is_list($value)){foreach($value as &$item){$sort($item);}unset($item);return;}ksort($value);foreach($value as &$item){$sort($item);}unset($item);};$sort($manifest);
+$actual=hash('sha256',json_encode($manifest,JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE));$expected='89b0b6a4190a23c1e0e15da44de7f0195a3d333967d8a4b4f1f82beed712c5b6';
+if(!hash_equals($expected,$actual)){fwrite(STDERR,"Provenance canonicalization mismatch.\n");exit(1);}echo "VeriFact PHP/Python provenance contract passed.\n";

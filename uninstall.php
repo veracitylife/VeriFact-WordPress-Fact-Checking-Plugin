@@ -1,16 +1,14 @@
 <?php
-if (!defined('WP_UNINSTALL_PLUGIN')) {
-    exit;
-}
-delete_option('verifact_api_base');
-delete_option('verifact_api_key');
-delete_option('verifact_rate_limit');
-delete_option('verifact_cache_duration');
-delete_option('verifact_user_permissions');
-delete_option('verifact_enable_archiveorg');
-delete_option('verifact_enable_grokopedia');
-delete_option('verifact_remote_cache_enabled');
-delete_option('verifact_remote_cache_url');
-delete_option('verifact_schedules');
-// Note: preserving wp_verifact_logs by default; remove if desired:
-// global $wpdb; $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}verifact_logs");
+if (!defined('WP_UNINSTALL_PLUGIN')) { exit; }
+$verifact_cleanup_site=static function(): void {
+foreach(['verifact_daily_retention','verifact_process_job','verifact_queue_worker','verifact_queue_action_scheduler'] as $hook){wp_clear_scheduled_hook($hook);}
+$options=['verifact_api_base','verifact_api_key','verifact_public_enabled','verifact_require_login','verifact_user_permissions','verifact_rate_limit','verifact_cache_duration','verifact_log_client_metadata','verifact_retention_days','verifact_db_version','verifact_gate_enabled','verifact_gate_post_types','verifact_gate_min_confidence','verifact_connection_profiles','verifact_active_profile','verifact_allowed_api_hosts','verifact_installation_id','verifact_license_suffix','verifact_license_status'];
+foreach($options as $option){delete_option($option);}
+foreach(['administrator','editor','author'] as $role_name){$role=get_role($role_name);if($role){foreach(['verifact_check_content','verifact_view_reports','verifact_manage'] as $cap){$role->remove_cap($cap);}}}
+foreach(['verifact_job','verifact_evidence'] as $type){$ids=get_posts(['post_type'=>$type,'post_status'=>'any','numberposts'=>-1,'fields'=>'ids']);foreach($ids as $id){wp_delete_post($id,true);}}
+global $wpdb;
+$wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}verifact_logs");
+$wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}verifact_jobs");
+$wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_verifact_%' OR option_name LIKE '_transient_timeout_verifact_%'");
+};
+if (is_multisite()) { foreach (get_sites(['fields'=>'ids']) as $site_id) { switch_to_blog($site_id); $verifact_cleanup_site(); restore_current_blog(); } } else { $verifact_cleanup_site(); }

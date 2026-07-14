@@ -1,0 +1,58 @@
+name: WordPress Quality
+on: [push, pull_request]
+jobs:
+  php-matrix:
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ["8.1", "8.2", "8.3", "8.4"]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with: {php-version: "${{ matrix.php }}", tools: composer}
+      - run: composer test
+      - run: find . -path ./backup-files -prune -o -name '*.php' -print0 | xargs -0 -n1 php -l
+  static:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: "22", cache: npm}
+      - run: npm ci
+      - run: npm run check
+      - run: pwsh tools/build-plugin.ps1
+      - uses: wordpress/plugin-check-action@v1
+        with: {build-dir: dist/verifact}
+  wordpress-matrix:
+    strategy:
+      fail-fast: false
+      matrix:
+        core: ["WordPress/WordPress#6.2", "WordPress/WordPress#6.8", "WordPress/WordPress#master"]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: "22"}
+      - run: npm ci
+      - run: node -e "const fs=require('fs');const p='.wp-env.json';const x=JSON.parse(fs.readFileSync(p));x.core=process.env.WP_CORE;fs.writeFileSync(p,JSON.stringify(x));"
+        env: {WP_CORE: "${{ matrix.core }}"}
+      - run: npm run wp:start
+      - run: npm run test:integration
+      - run: npm run test:compatibility
+      - run: npm run test:queue-recovery
+      - run: npm run test:bulk-registration
+      - run: npm run test:large-post
+      - if: always()
+        run: npm run wp:stop
+  multisite:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: "22"}
+      - run: npm ci
+      - run: npm run wp:start
+      - run: npm run test:multisite
+      - if: always()
+        run: npm run wp:stop

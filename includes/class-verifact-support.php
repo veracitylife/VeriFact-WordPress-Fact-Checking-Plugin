@@ -1,0 +1,9 @@
+<?php
+if (!defined('ABSPATH')) { exit; }
+
+final class VeriFact_Support {
+    private VeriFact_Plugin $core;private VeriFact_Queue $queue;private VeriFact_Enterprise $enterprise;
+    public function __construct(VeriFact_Plugin $core,VeriFact_Queue $queue,VeriFact_Enterprise $enterprise){$this->core=$core;$this->queue=$queue;$this->enterprise=$enterprise;add_action('rest_api_init',[$this,'routes']);}
+    public function routes(): void { register_rest_route('verifact/v1','/support-bundle',['methods'=>WP_REST_Server::READABLE,'callback'=>[$this,'bundle'],'permission_callback'=>fn()=>current_user_can('verifact_manage')]); }
+    public function bundle(): array { global $wp_version;$connection=$this->core->connection_report();$safe_connection=['connected'=>(bool)($connection['connected']??false),'authenticated'=>(bool)($connection['authenticated']??false),'compatible'=>(bool)($connection['compatible']??false),'server_version'=>(string)($connection['server_version']??''),'contract_version'=>(string)($connection['contract_version']??''),'auth_type'=>(string)($connection['auth_type']??''),'scopes'=>(array)($connection['scopes']??[]),'region'=>(string)($connection['region']??'')];return ['generated_at'=>current_time('mysql',true),'plugin_version'=>VeriFact_Plugin::VERSION,'wordpress_version'=>$wp_version,'php_version'=>PHP_VERSION,'multisite'=>is_multisite(),'api'=>$safe_connection,'queue'=>$this->queue->metrics(),'connection'=>$this->enterprise->status(),'object_cache'=>wp_using_ext_object_cache(),'cron_disabled'=>defined('DISABLE_WP_CRON')&&DISABLE_WP_CRON,'supported_post_types'=>apply_filters('verifact_supported_post_types',[]),'privacy'=>['retention_days'=>(int)get_option('verifact_retention_days',90),'client_metadata'=>(bool)get_option('verifact_log_client_metadata',false)],'redaction'=>'Article content, API keys, tenant IDs, user identities, IP addresses, and environment values are excluded.']; }
+}

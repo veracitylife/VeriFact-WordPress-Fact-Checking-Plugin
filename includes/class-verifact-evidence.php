@@ -1,0 +1,22 @@
+<?php
+if (!defined('ABSPATH')) { exit; }
+
+final class VeriFact_Evidence {
+    public function __construct() {
+        add_action('init',[$this,'register']);add_action('verifact_post_reviewed',[$this,'sync'],10,2);add_shortcode('verifact_citations',[$this,'citations']);add_action('wp_head',[$this,'claimreview']);add_action('rest_api_init',[$this,'routes']);
+    }
+    public function register(): void { register_post_type('verifact_evidence',['public'=>false,'show_ui'=>current_user_can('verifact_manage'),'label'=>__('Evidence Library','verifact'),'supports'=>['title','editor','custom-fields']]); }
+    public function sync(int $post_id,array $report): void {
+        $ids=[];
+        foreach((array)($report['results']??[]) as $result){foreach((array)($result['evidence']??[]) as $evidence){$hash=sanitize_text_field((string)($evidence['content_hash']??hash('sha256',(string)($evidence['url']??''))));$existing=get_posts(['post_type'=>'verifact_evidence','post_status'=>'private','numberposts'=>1,'meta_key'=>'_verifact_source_hash','meta_value'=>$hash,'fields'=>'ids']);$id=$existing?(int)$existing[0]:wp_insert_post(['post_type'=>'verifact_evidence','post_status'=>'private','post_title'=>sanitize_text_field((string)($evidence['title']??__('Evidence','verifact'))),'post_content'=>sanitize_textarea_field((string)($evidence['snippet']??'')),'meta_input'=>['_verifact_source_hash'=>$hash,'_verifact_source_url'=>esc_url_raw((string)($evidence['url']??'')),'_verifact_publisher'=>sanitize_text_field((string)($evidence['publisher']??'')),'_verifact_retrieved_at'=>sanitize_text_field((string)($evidence['retrieved_at']??''))]]);if($id&&!is_wp_error($id)){$ids[]=(int)$id;}}}
+        update_post_meta($post_id,'_verifact_evidence_ids',array_values(array_unique($ids)));
+    }
+    public function citations(array $atts=[]): string {
+        $post_id=absint($atts['post_id']??get_the_ID());$ids=(array)get_post_meta($post_id,'_verifact_evidence_ids',true);if(!$ids){return '';}$html='<ol class="verifact-citations" aria-label="'.esc_attr__('Fact-checking sources','verifact').'">';foreach($ids as $id){$url=(string)get_post_meta($id,'_verifact_source_url',true);$publisher=(string)get_post_meta($id,'_verifact_publisher',true);$html.='<li><a rel="noopener noreferrer" href="'.esc_url($url).'">'.esc_html(get_the_title($id)).'</a>'.($publisher?' — '.esc_html($publisher):'').'</li>';}$html.='</ol>';return $html;
+    }
+    public function routes(): void { register_rest_route('verifact/v1','/posts/(?P<id>\d+)/claimreview',['methods'=>WP_REST_Server::CREATABLE,'callback'=>[$this,'approve'],'permission_callback'=>fn($r)=>current_user_can('publish_post',absint($r['id']))&&current_user_can('verifact_view_reports')]); }
+    public function approve(WP_REST_Request $request) { $id=absint($request['id']);$post=get_post($id);if(!$post){return new WP_Error('not_found',__('Post not found.','verifact'),['status'=>404]);}$approved=['approved'=>true,'user_id'=>get_current_user_id(),'created_at'=>current_time('mysql',true),'content_hash'=>hash('sha256',trim(wp_strip_all_tags(strip_shortcodes($post->post_title."\n".$post->post_content))))];update_post_meta($id,'_verifact_claimreview_approved',$approved);return $approved; }
+    public function claimreview(): void {
+        if(!is_singular()){return;}$id=get_queried_object_id();$approval=(array)get_post_meta($id,'_verifact_claimreview_approved',true);$report=(array)get_post_meta($id,'_verifact_last_report',true);$post=get_post($id);$current=$post?hash('sha256',trim(wp_strip_all_tags(strip_shortcodes($post->post_title."\n".$post->post_content)))):'';if(empty($approval['approved'])||!hash_equals((string)($approval['content_hash']??''),$current)||empty($report['results'])){return;}$items=[];$ratings=['supported'=>5,'refuted'=>1,'disputed'=>2,'outdated'=>2,'insufficient_evidence'=>2];foreach($report['results'] as $result){$items[]=['@context'=>'https://schema.org','@type'=>'ClaimReview','url'=>get_permalink($id),'claimReviewed'=>(string)($result['claim']??''),'author'=>['@type'=>'Organization','name'=>get_bloginfo('name')],'reviewRating'=>['@type'=>'Rating','ratingValue'=>$ratings[$result['stance']??'insufficient_evidence']??2,'bestRating'=>5,'worstRating'=>1,'alternateName'=>ucwords(str_replace('_',' ',(string)($result['stance']??'insufficient_evidence')))]];}echo '<script type="application/ld+json">'.wp_json_encode($items,JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE).'</script>';
+    }
+}
