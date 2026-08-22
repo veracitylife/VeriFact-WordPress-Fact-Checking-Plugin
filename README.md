@@ -1,4 +1,4 @@
-# Verifact — WordPress Plugin (2.0.8)
+# Verifact — WordPress Plugin (3.6.0)
 UI + REST proxy for the VeriFact FastAPI service.
 
 ## Usage
