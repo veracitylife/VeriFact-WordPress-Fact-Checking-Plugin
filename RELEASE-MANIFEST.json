@@ -1,0 +1,10 @@
+{
+  "product": "VeriFact WordPress Fact Checking Plugin",
+  "version": "3.6.0",
+  "api_contract_version": "2026-08-22.1",
+  "release_date": "2026-08-22",
+  "notes": [
+    "Release metadata aligned with the VeriFact 3.6.0 API.",
+    "No credentials, site keys, or environment configuration are included."
+  ]
+}
