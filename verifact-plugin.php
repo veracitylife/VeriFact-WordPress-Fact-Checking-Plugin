@@ -2,7 +2,7 @@
 /**
  * Plugin Name: VeriFact Checker Pro
  * Description: Advanced WordPress UI + REST proxy for the VeriFact (FacTool + Retrieval) FastAPI service with comprehensive dashboard.
- * Version: 2.0.8
+ * Version: 3.6.0
  * Author: Veracity Integrity
  * License: MIT
  * Requires at least: 5.8
