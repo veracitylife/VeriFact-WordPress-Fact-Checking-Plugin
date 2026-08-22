@@ -84,10 +84,10 @@ class VeriFactPlugin {
     }
     public function admin_enqueue_scripts($hook) {
         if (strpos($hook, 'verifact') !== false) {
-            wp_enqueue_style('verifact-admin-css', plugins_url('assets/verifact-admin.css', __FILE__), [], '2.0.8');
-            wp_enqueue_style('verifact-graphics-css', plugins_url('assets/verifact-graphics.css', __FILE__), ['verifact-admin-css'], '2.0.8');
-            wp_enqueue_style('verifact-widgets-css', plugins_url('assets/verifact-widgets.css', __FILE__), ['verifact-admin-css'], '2.0.8');
-            wp_enqueue_script('verifact-admin-js', plugins_url('assets/verifact-admin.js', __FILE__), ['jquery'], '2.0.8', true);
+            wp_enqueue_style('verifact-admin-css', plugins_url('assets/verifact-admin.css', __FILE__), [], '3.6.0');
+            wp_enqueue_style('verifact-graphics-css', plugins_url('assets/verifact-graphics.css', __FILE__), ['verifact-admin-css'], '3.6.0');
+            wp_enqueue_style('verifact-widgets-css', plugins_url('assets/verifact-widgets.css', __FILE__), ['verifact-admin-css'], '3.6.0');
+            wp_enqueue_script('verifact-admin-js', plugins_url('assets/verifact-admin.js', __FILE__), ['jquery'], '3.6.0', true);
             wp_localize_script('verifact-admin-js', 'verifactAdmin', [
                 'ajaxurl' => admin_url('admin-ajax.php'),
                 'nonce' => wp_create_nonce('verifact_admin_nonce'),
@@ -101,8 +101,8 @@ class VeriFactPlugin {
         }
     }
     public function enqueue_assets() {
-        wp_register_style('verifact-css', plugins_url('assets/verifact.css', __FILE__), [], '2.0.8');
-        wp_register_script('verifact-js', plugins_url('assets/verifact.js', __FILE__), [], '2.0.8', true);
+        wp_register_style('verifact-css', plugins_url('assets/verifact.css', __FILE__), [], '3.6.0');
+        wp_register_script('verifact-js', plugins_url('assets/verifact.js', __FILE__), [], '3.6.0', true);
         wp_localize_script('verifact-js', 'VeriFactCfg', [
             'restUrl' => esc_url_raw(rest_url('verifact/v1/check')),
             'nonce' => wp_create_nonce(self::NONCE_ACTION),
