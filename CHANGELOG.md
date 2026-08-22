@@ -1,3 +1,8 @@
+## 3.6.0 - 2026-08-22
+
+- Align release metadata with the VeriFact 3.6.0 API contract.
+- Preserve secure request correlation and idempotent verification behavior.
+
 ## 2.0.5 — 2026-01-23
 - Role-based rate limit overrides with JSON mapping
 - Object cache wrappers for result caching (Redis-compatible)
